@@ -4,3 +4,5 @@ venv/*
 *.pyc
 # Input data files
 *.csv
+# Output video files
+*.mp4
