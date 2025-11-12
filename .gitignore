@@ -1,0 +1,6 @@
+# Python virtual environment
+venv/*
+# Compiled Python files
+*.pyc
+# Input data files
+*.csv
