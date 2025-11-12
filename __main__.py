@@ -73,6 +73,9 @@ def main():
 	print("Displaying animation...")
 	plt.show()
 	print("Done!")
+	print("Saving animation to file...")
+	anim.save("output.mp4")
+	print("Done!")
 
 
 if __name__ == "__main__":
