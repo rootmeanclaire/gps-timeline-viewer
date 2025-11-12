@@ -31,13 +31,10 @@ def set_bounds(ax, x, y):
 
 def make_animation(df: pd.DataFrame):
 	# Initialize canvas
-	fig = plt.figure(figsize=(12, 5))
+	fig = plt.figure(figsize=(12, 6), dpi=96)
 	ax1 = plt.subplot(1, 2, 1)
 	ax2 = plt.subplot(1, 2, 2)
 	zoom_idx = (df["Time"] >= ZOOM_START) & (df["Time"] <= ZOOM_END) & (df["Walking"])
-	print(ZOOM_START)
-	print(ZOOM_END)
-	print(zoom_idx)
 	# Full Bounds
 	set_bounds(ax1, df["Latitude"], df["Longitude"])
 	set_bounds(ax2,
