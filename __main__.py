@@ -35,20 +35,41 @@ def load_csv(filename):
 def make_animation(df: pd.DataFrame):
 	# Initialize canvas
 	fig, ax = plt.subplots()
-	pt, = ax.plot([], [], "b.", ms=10)
+	# Bounds
+	xmin = min(df["Latitude"])
+	xmax = max(df["Latitude"])
+	xrange = xmax - xmin
+	ymin = min(df["Longitude"])
+	ymax = max(df["Longitude"])
+	yrange = ymax - ymin
+	ax.set(
+		xlim=[
+			xmin - xrange*0.1,
+			xmax + xrange*0.1
+		],
+		ylim=[
+			ymin - yrange*0.1,
+			ymax + yrange*0.1
+		],
+		xlabel="Latitude",
+		ylabel="Longitude"
+	)
+	# Animation objects
+	title = ax.set_title(df["Time"][0])
+	path = ax.plot(df["Latitude"][0], df["Longitude"][0])[0]
 	# Animation procedure
-	def draw_frame(idx):
-		pt.set_data([df["Latitude"][idx]], [df["Longitude"][idx]])
-	return FuncAnimation(fig, draw_frame, frames=len(df), interval=20)
+	def frame(idx):
+		title.set_text(df["Time"][idx])
+		path.set_xdata(df["Latitude"][:idx])
+		path.set_ydata(df["Longitude"][:idx])
+		return path
+	return FuncAnimation(fig, frame, frames=len(df), interval=20)
 
 
 def main():
 	df = parse_args()
 	print(df)
 	anim = make_animation(df)
-	print("Saving animation to file...")
-	anim.save("output.mp4")
-	print("Done!")
 	print("Displaying animation...")
 	plt.show()
 	print("Done!")
