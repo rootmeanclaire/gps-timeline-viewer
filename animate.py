@@ -34,7 +34,7 @@ def make_animation(df: pd.DataFrame):
 	fig = plt.figure(figsize=(12, 5))
 	ax1 = plt.subplot(1, 2, 1)
 	ax2 = plt.subplot(1, 2, 2)
-	zoom_idx = (df["Time"] >= ZOOM_START) & (df["Time"] <= ZOOM_END)
+	zoom_idx = (df["Time"] >= ZOOM_START) & (df["Time"] <= ZOOM_END) & (df["Walking"])
 	print(ZOOM_START)
 	print(ZOOM_END)
 	print(zoom_idx)

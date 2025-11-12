@@ -42,5 +42,5 @@ def load_csv(filename):
 	df.insert(3, "East", east)
 	df.insert(4, "North", north)
 	df.insert(5, "Speed (m/s)", speed)
-	df.insert(6, "Walking", speed < 6)
+	df.insert(6, "Walking", speed < 3)
 	return df
