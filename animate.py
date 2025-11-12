@@ -6,6 +6,7 @@ from matplotlib.animation import FuncAnimation
 
 ZOOM_START = datetime.strptime("0:55:26", "%H:%M:%S")
 ZOOM_END = datetime.strptime("01:08:43", "%H:%M:%S")
+SPEED_MULTIPLIER = 10
 
 
 def set_bounds(ax, x, y):
@@ -55,4 +56,4 @@ def make_animation(df: pd.DataFrame):
 		path2.set_xdata(df["Latitude"][:idx])
 		path2.set_ydata(df["Longitude"][:idx])
 		return (path1, path2)
-	return FuncAnimation(fig, frame, frames=len(df), interval=20)
+	return FuncAnimation(fig, frame, frames=len(df), interval=1000/SPEED_MULTIPLIER)
