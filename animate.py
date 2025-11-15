@@ -5,9 +5,13 @@ from matplotlib.animation import FuncAnimation
 from PIL import Image
 
 
+X_KEY = "Longitude"
+Y_KEY = "Latitude"
 ZOOM_START = datetime.strptime("0:55:26", "%H:%M:%S")
 ZOOM_END = datetime.strptime("01:08:43", "%H:%M:%S")
 SPEED_MULTIPLIER = 10
+LINE_WIDTH = 2
+LINE_COLOR = "red"
 
 
 def set_bounds(ax, x, y):
@@ -25,7 +29,7 @@ def set_bounds(ax, x, y):
 
 	ax.set(
 		xlim=[left, right], ylim=[bottom, top],
-		xlabel="Latitude", ylabel="Longitude"
+		xlabel=X_KEY, ylabel=Y_KEY
 	)
 	print(f"X-axis bound set to {left}, {right}")
 	print(f"Y-axis bound set to {bottom}, {top}")
@@ -42,29 +46,30 @@ def make_animation(df: pd.DataFrame):
 	ax2.ticklabel_format(style="plain", useOffset=False)
 	zoom_idx = (df["Time"] >= ZOOM_START) & (df["Time"] <= ZOOM_END) & (df["Walking"])
 	# Full Bounds
-	ex1 = set_bounds(ax1, df["Latitude"], df["Longitude"])
-	ex2 = set_bounds(ax2,
-		df["Latitude"][zoom_idx],
-		df["Longitude"][zoom_idx]
-	)
+	ex1 = set_bounds(ax1, df[X_KEY], df[Y_KEY])
+	ex2 = set_bounds(ax2, df[X_KEY][zoom_idx], df[Y_KEY][zoom_idx])
 	bg1 = Image.open("bg1.png")
 	bg2 = Image.open("bg2.png")
-	ax1.imshow(bg1, extent=ex1, aspect="equal")
-	ax2.imshow(bg2, extent=ex2, aspect="equal")
-	ax1.set_aspect(bg1.size[1]/bg1.size[0])
-	ax2.set_aspect(bg2.size[1]/bg2.size[0])
+	ax1.imshow(bg1, extent=ex1)
+	ax2.imshow(bg2, extent=ex2)
 	# Animation objects
 	title1 = ax1.set_title(df["Time"][0])
 	title2 = ax2.set_title(df["Time"][0])
-	path1 = ax1.plot(df["Latitude"][0], df["Longitude"][0])[0]
-	path2 = ax2.plot(df["Latitude"][0], df["Longitude"][0])[0]
+	path1 = ax1.plot(
+		df[X_KEY][0], df[Y_KEY][0],
+		linewidth=LINE_WIDTH, color=LINE_COLOR
+	)[0]
+	path2 = ax2.plot(
+		df[X_KEY][0], df[Y_KEY][0],
+		linewidth=LINE_WIDTH, color=LINE_COLOR
+	)[0]
 	# Animation procedure
 	def frame(idx):
 		title1.set_text(df["Time"][idx])
 		title2.set_text(df["Time"][idx])
-		path1.set_xdata(df["Latitude"][:idx])
-		path1.set_ydata(df["Longitude"][:idx])
-		path2.set_xdata(df["Latitude"][:idx])
-		path2.set_ydata(df["Longitude"][:idx])
+		path1.set_xdata(df[X_KEY][:idx])
+		path1.set_ydata(df[Y_KEY][:idx])
+		path2.set_xdata(df[X_KEY][:idx])
+		path2.set_ydata(df[Y_KEY][:idx])
 		return (path1, path2)
 	return FuncAnimation(fig, frame, frames=len(df), interval=1000/SPEED_MULTIPLIER)
