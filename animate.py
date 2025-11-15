@@ -2,6 +2,7 @@ from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from PIL import Image
 
 
 ZOOM_START = datetime.strptime("0:55:26", "%H:%M:%S")
@@ -16,18 +17,20 @@ def set_bounds(ax, x, y):
 	ymin = min(y)
 	ymax = max(y)
 	yrange = ymax - ymin
+
+	left = xmin - xrange*0.1
+	right = xmax + xrange*0.1
+	bottom = ymin - yrange*0.1
+	top = ymax + yrange*0.1
+
 	ax.set(
-		xlim=[
-			xmin - xrange*0.1,
-			xmax + xrange*0.1
-		],
-		ylim=[
-			ymin - yrange*0.1,
-			ymax + yrange*0.1
-		],
-		xlabel="Latitude",
-		ylabel="Longitude"
+		xlim=[left, right], ylim=[bottom, top],
+		xlabel="Latitude", ylabel="Longitude"
 	)
+	print(f"X-axis bound set to {left}, {right}")
+	print(f"Y-axis bound set to {bottom}, {top}")
+
+	return [left, right, bottom, top]
 
 
 def make_animation(df: pd.DataFrame):
@@ -39,11 +42,17 @@ def make_animation(df: pd.DataFrame):
 	ax2.ticklabel_format(style="plain", useOffset=False)
 	zoom_idx = (df["Time"] >= ZOOM_START) & (df["Time"] <= ZOOM_END) & (df["Walking"])
 	# Full Bounds
-	set_bounds(ax1, df["Latitude"], df["Longitude"])
-	set_bounds(ax2,
+	ex1 = set_bounds(ax1, df["Latitude"], df["Longitude"])
+	ex2 = set_bounds(ax2,
 		df["Latitude"][zoom_idx],
 		df["Longitude"][zoom_idx]
 	)
+	bg1 = Image.open("bg1.png")
+	bg2 = Image.open("bg2.png")
+	ax1.imshow(bg1, extent=ex1, aspect="equal")
+	ax2.imshow(bg2, extent=ex2, aspect="equal")
+	ax1.set_aspect(bg1.size[1]/bg1.size[0])
+	ax2.set_aspect(bg2.size[1]/bg2.size[0])
 	# Animation objects
 	title1 = ax1.set_title(df["Time"][0])
 	title2 = ax2.set_title(df["Time"][0])
